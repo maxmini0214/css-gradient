@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSS Gradient Generator - Create Beautiful Gradients</title>
+<meta name="description" content="Free online CSS gradient generator. Create linear, radial, and conic gradients with real-time preview. Copy CSS code instantly.">
+<meta name="keywords" content="CSS gradient, gradient generator, linear gradient, radial gradient, conic gradient, CSS tool">
+<meta property="og:title" content="CSS Gradient Generator">
+<meta property="og:description" content="Create beautiful CSS gradients with real-time preview. Linear, radial, and conic gradients.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://maxmini0214.github.io/css-gradient/">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0f0f13;--surface:#1a1a24;--surface2:#252535;--border:#333348;--text:#e8e8f0;--text2:#9999b0;--accent:#7c6cf0;--accent2:#f06c9b}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+header{text-align:center;padding:2rem 1rem 1rem}
+header h1{font-size:1.8rem;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+header p{color:var(--text2);margin-top:.4rem;font-size:.95rem}
+.app{max-width:1100px;margin:0 auto;padding:1rem;display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+@media(max-width:768px){.app{grid-template-columns:1fr}}
+.preview-card{background:var(--surface);border-radius:16px;padding:1.5rem;border:1px solid var(--border)}
+.preview-box{width:100%;aspect-ratio:4/3;border-radius:12px;transition:background .3s}
+.controls-card{background:var(--surface);border-radius:16px;padding:1.5rem;border:1px solid var(--border);display:flex;flex-direction:column;gap:1.2rem}
+label{font-size:.85rem;color:var(--text2);display:block;margin-bottom:.4rem}
+.type-btns{display:flex;gap:.5rem}
+.type-btns button{flex:1;padding:.6rem;border:1px solid var(--border);background:var(--surface2);color:var(--text);border-radius:8px;cursor:pointer;font-size:.85rem;transition:all .2s}
+.type-btns button.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.color-stops{display:flex;flex-direction:column;gap:.6rem}
+.color-row{display:flex;align-items:center;gap:.6rem}
+.color-row input[type=color]{width:44px;height:36px;border:none;border-radius:8px;cursor:pointer;background:none}
+.color-row input[type=range]{flex:1}
+.color-row .pos{font-size:.8rem;color:var(--text2);width:36px;text-align:right}
+.color-row button{background:none;border:none;color:var(--text2);cursor:pointer;font-size:1.1rem;padding:0 .3rem}
+.color-row button:hover{color:var(--accent2)}
+.add-color{background:var(--surface2);border:1px dashed var(--border);color:var(--text2);padding:.5rem;border-radius:8px;cursor:pointer;font-size:.85rem}
+.add-color:hover{border-color:var(--accent);color:var(--accent)}
+.angle-group{display:flex;align-items:center;gap:.8rem}
+.angle-group input[type=range]{flex:1}
+.angle-group span{font-size:.9rem;width:45px;text-align:right}
+.code-box{background:var(--bg);border-radius:10px;padding:1rem;font-family:'SF Mono',Consolas,monospace;font-size:.82rem;color:var(--accent);word-break:break-all;line-height:1.5;position:relative;border:1px solid var(--border)}
+.copy-btn{position:absolute;top:.6rem;right:.6rem;background:var(--accent);color:#fff;border:none;padding:.4rem .8rem;border-radius:6px;cursor:pointer;font-size:.8rem;transition:background .2s}
+.copy-btn:hover{background:var(--accent2)}
+.copy-btn.copied{background:#2ea043}
+.presets{margin-top:.5rem}
+.presets h3{font-size:.9rem;color:var(--text2);margin-bottom:.6rem}
+.preset-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.5rem}
+@media(max-width:768px){.preset-grid{grid-template-columns:repeat(5,1fr)}}
+.preset-swatch{aspect-ratio:1;border-radius:10px;cursor:pointer;border:2px solid transparent;transition:border .2s}
+.preset-swatch:hover{border-color:var(--accent)}
+footer{text-align:center;padding:2rem 1rem;color:var(--text2);font-size:.8rem}
+input[type=range]{-webkit-appearance:none;background:var(--surface2);height:6px;border-radius:3px;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--accent);cursor:pointer}
+</style>
+</head>
+<body>
+<header>
+<h1>CSS Gradient Generator</h1>
+<p>Create beautiful gradients — copy the CSS instantly</p>
+</header>
+
+<div class="app">
+<div class="preview-card">
+<div class="preview-box" id="preview"></div>
+<div class="code-box" id="codeBox" style="margin-top:1rem">
+<button class="copy-btn" id="copyBtn" onclick="copyCSS()">Copy</button>
+<code id="codeText"></code>
+</div>
+</div>
+
+<div class="controls-card">
+<div>
+<label>Gradient Type</label>
+<div class="type-btns" id="typeBtns">
+<button class="active" data-type="linear">Linear</button>
+<button data-type="radial">Radial</button>
+<button data-type="conic">Conic</button>
+</div>
+</div>
+
+<div id="angleGroup">
+<label>Angle</label>
+<div class="angle-group">
+<input type="range" id="angle" min="0" max="360" value="135">
+<span id="angleVal">135°</span>
+</div>
+</div>
+
+<div>
+<label>Color Stops</label>
+<div class="color-stops" id="colorStops"></div>
+<button class="add-color" id="addColor" onclick="addStop()">+ Add Color</button>
+</div>
+
+<div class="presets">
+<h3>Presets</h3>
+<div class="preset-grid" id="presetGrid"></div>
+</div>
+</div>
+</div>
+
+<footer>Built with ♥ — No frameworks, no tracking, just gradients.</footer>
+
+<script>
+const PRESETS=[
+{type:'linear',angle:135,stops:[{c:'#667eea',p:0},{c:'#764ba2',p:100}]},
+{type:'linear',angle:120,stops:[{c:'#f093fb',p:0},{c:'#f5576c',p:100}]},
+{type:'linear',angle:135,stops:[{c:'#4facfe',p:0},{c:'#00f2fe',p:100}]},
+{type:'linear',angle:135,stops:[{c:'#43e97b',p:0},{c:'#38f9d7',p:100}]},
+{type:'linear',angle:135,stops:[{c:'#fa709a',p:0},{c:'#fee140',p:100}]},
+{type:'linear',angle:135,stops:[{c:'#a18cd1',p:0},{c:'#fbc2eb',p:100}]},
+{type:'radial',angle:0,stops:[{c:'#ffecd2',p:0},{c:'#fcb69f',p:100}]},
+{type:'conic',angle:0,stops:[{c:'#ff9a9e',p:0},{c:'#fad0c4',p:50},{c:'#ff9a9e',p:100}]},
+{type:'linear',angle:90,stops:[{c:'#0c0c1d',p:0},{c:'#1a1a40',p:50},{c:'#4a00e0',p:100}]},
+{type:'linear',angle:135,stops:[{c:'#ff0844',p:0},{c:'#ffb199',p:100}]},
+];
+
+let state={type:'linear',angle:135,stops:[{c:'#667eea',p:0},{c:'#764ba2',p:100}]};
+
+function buildCSS(){
+const s=state.stops.map(s=>`${s.c} ${s.p}%`).join(', ');
+if(state.type==='linear') return `linear-gradient(${state.angle}deg, ${s})`;
+if(state.type==='radial') return `radial-gradient(circle, ${s})`;
+return `conic-gradient(from ${state.angle}deg, ${s})`;
+}
+
+function render(){
+const css=buildCSS();
+document.getElementById('preview').style.background=css;
+document.getElementById('codeText').textContent=`background: ${css};`;
+document.getElementById('angleGroup').style.display=(state.type==='radial')?'none':'block';
+renderStops();
+}
+
+function renderStops(){
+const el=document.getElementById('colorStops');
+el.innerHTML='';
+state.stops.forEach((s,i)=>{
+const row=document.createElement('div');
+row.className='color-row';
+row.innerHTML=`<input type="color" value="${s.c}" data-i="${i}" class="sc">
+<input type="range" min="0" max="100" value="${s.p}" data-i="${i}" class="sp">
+<span class="pos">${s.p}%</span>
+${state.stops.length>2?`<button data-i="${i}" class="sd">✕</button>`:''}`;
+el.appendChild(row);
+});
+el.querySelectorAll('.sc').forEach(e=>e.oninput=ev=>{state.stops[+ev.target.dataset.i].c=ev.target.value;render()});
+el.querySelectorAll('.sp').forEach(e=>e.oninput=ev=>{state.stops[+ev.target.dataset.i].p=+ev.target.value;render()});
+el.querySelectorAll('.sd').forEach(e=>e.onclick=ev=>{state.stops.splice(+ev.target.dataset.i,1);render()});
+}
+
+function addStop(){
+if(state.stops.length>=5)return;
+const hue=Math.floor(Math.random()*360);
+state.stops.push({c:`hsl(${hue},70%,60%)`,p:50});
+// convert hsl to hex via canvas
+const ctx=document.createElement('canvas').getContext('2d');
+ctx.fillStyle=`hsl(${hue},70%,60%)`;
+state.stops[state.stops.length-1].c=ctx.fillStyle;
+render();
+}
+
+function copyCSS(){
+const text=document.getElementById('codeText').textContent;
+navigator.clipboard.writeText(text).then(()=>{
+const b=document.getElementById('copyBtn');b.textContent='Copied!';b.classList.add('copied');
+setTimeout(()=>{b.textContent='Copy';b.classList.remove('copied')},1500);
+});
+}
+
+// type buttons
+document.getElementById('typeBtns').onclick=e=>{
+if(!e.target.dataset.type)return;
+state.type=e.target.dataset.type;
+document.querySelectorAll('.type-btns button').forEach(b=>b.classList.remove('active'));
+e.target.classList.add('active');
+render();
+};
+
+// angle
+document.getElementById('angle').oninput=e=>{
+state.angle=+e.target.value;
+document.getElementById('angleVal').textContent=e.target.value+'°';
+render();
+};
+
+// presets
+const pg=document.getElementById('presetGrid');
+PRESETS.forEach((p,i)=>{
+const d=document.createElement('div');
+d.className='preset-swatch';
+const s=p.stops.map(s=>`${s.c} ${s.p}%`).join(', ');
+const css=p.type==='linear'?`linear-gradient(${p.angle}deg, ${s})`:p.type==='radial'?`radial-gradient(circle, ${s})`:`conic-gradient(from ${p.angle}deg, ${s})`;
+d.style.background=css;
+d.onclick=()=>{
+state={type:p.type,angle:p.angle,stops:JSON.parse(JSON.stringify(p.stops))};
+document.querySelectorAll('.type-btns button').forEach(b=>b.classList.toggle('active',b.dataset.type===state.type));
+document.getElementById('angle').value=state.angle;
+document.getElementById('angleVal').textContent=state.angle+'°';
+render();
+};
+pg.appendChild(d);
+});
+
+render();
+</script>
+</body>
+</html>
